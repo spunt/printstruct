@@ -1,12 +1,12 @@
 function pS = printstruct(S, varargin)
 % PRINTSTRUCT Recursively print hierarchical outline of structure contents
-%
+% 
 %  This is a minor adaptation of the File Exchange contribution "Structure
 %  outline" written by B. Roossien <roossien@ecn.nl> and available here:
 %  http://mathworks.com/matlabcentral/fileexchange/13500-structure-outline
 % __________________________________________________________________________
 %  USAGE: pS = printstruct(S, varargin)
-%
+% 
 %    IN:   S = structure variable to print
 %  OUT*:  pS = cell array containing printed structure
 %  
@@ -14,7 +14,7 @@ function pS = printstruct(S, varargin)
 % __________________________________________________________________________
 %  OPTIONAL VARARGIN* [entered as 'name', value pairs]:
 %   *Run printstruct w/no arguments to see default values
-%
+% 
 %   NLEVELS:        N levels to print. If negative, all levels printed. 
 %   NINDENT:        number of tab indents for each line of printed struct
 %   STRUCTNAME:     top level name (if empty, variable name will be used)
@@ -25,10 +25,10 @@ function pS = printstruct(S, varargin)
 %   if printvalues is 0. 
 % _______________________________
 % EXAMPLES
-%
+% 
 %   pS = printstruct(S, 'maxarray', 100); 
 %   printstruct(S, 'nlev', 2, 'printcont', 0, 'nindent', 3)
-%
+% 
 
 % ---------------------- Copyright (C) 2015 Bob Spunt ----------------------
 %	Created:  2015-08-13
