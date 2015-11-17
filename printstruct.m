@@ -27,7 +27,7 @@ function pS = printstruct(S, varargin)
 % EXAMPLES
 % 
 %   pS = printstruct(S, 'maxarray', 100); 
-%   printstruct(S, 'nlev', 2, 'printcont', 0, 'nindent', 3)
+%   printstruct(S, 'nlevels', 2, 'printcontents', 0, 'nindent', 3)
 % 
 
 % ---------------------- Copyright (C) 2015 Bob Spunt ----------------------
