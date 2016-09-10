@@ -282,8 +282,14 @@ matrixFields  = fields(isMatrix == 1);
 % Cell array
 isCell        = structfun(@iscell, Structure);
 cellFields    = fields(isCell == 1);
+% Time series
+isTimeseries  = structfun(@(x) isa(x, 'timeseries'), Structure);
+tsFields      = fields(isTimeseries == 1);
+% Time series collection
+isTscollection = structfun(@(x) isa(x, 'tscollection'), Structure);
+tscollFields  = fields(isTscollection == 1);
 % Datatypes that are not checked for
-isOther       = not(isChar + isNumeric + isCell + isStruct + isLogical + isEmpty);
+isOther       = not(isChar + isNumeric + isCell + isStruct + isLogical + isEmpty + isTimeseries + isTscollection);
 otherFields   = fields(isOther == 1);
 %% Print non-structure fields
 % Print all the selected non structure fields
@@ -395,6 +401,23 @@ for iField = 1 : length(cellFields)
     Field = cell2mat(cellFields(iField));
     filler = char(ones(1, maxFieldLength - length(Field) + 2) * 45);
     varStr = createArraySize(Structure.(Field), 'Cell');
+    listStr = [listStr; {[strIndent '   |' filler ' ' Field ' :' varStr]}];
+end
+% Print time series information, i.e. the size of the time series. The
+% content of the time series is not printed.
+for iField = 1 : length(tsFields)
+    Field = cell2mat(tsFields(iField));
+    filler = char(ones(1, maxFieldLength - length(Field) + 2) * 45);
+    varStr = createArraySize(Structure.(Field), 'Time series');
+    listStr = [listStr; {[strIndent '   |' filler ' ' Field ' :' varStr]}];
+end
+% Print time series collection information, i.e. the size of the time
+% series collection. The content of the time series collection is not
+% printed.
+for iField = 1 : length(tscollFields)
+    Field = cell2mat(tscollFields(iField));
+    filler = char(ones(1, maxFieldLength - length(Field) + 2) * 45);
+    varStr = createArraySize(Structure.(Field), 'Time series collection');
     listStr = [listStr; {[strIndent '   |' filler ' ' Field ' :' varStr]}];
 end
 % Print unknown datatypes. These include objects and user-defined classes
