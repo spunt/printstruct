@@ -260,6 +260,9 @@ function listStr  = recFieldPrint(Structure, indent, depth, printValues, maxArra
     % Character or string (array of characters)
     isChar        = structfun(@ischar, Structure);
     charFields    = fields(isChar == 1);
+    % Function
+    isFunction     = structfun(@(x) isa(x,'function_handle'), Structure);
+    functionFields = fields(isFunction == 1);
     % Numeric fields
     isNumeric     = structfun(@isnumeric, Structure);
     % Numeric scalars
@@ -284,7 +287,7 @@ function listStr  = recFieldPrint(Structure, indent, depth, printValues, maxArra
     isCell        = structfun(@iscell, Structure);
     cellFields    = fields(isCell == 1);
     % Datatypes that are not checked for
-    isOther       = not(isChar + isNumeric + isCell + isStruct + isLogical + isEmpty);
+    isOther       = not(isChar + isFunction + isNumeric + isCell + isStruct + isLogical + isEmpty);
     otherFields   = fields(isOther == 1);
     %% Print non-structure fields
     % Print all the selected non structure fields
@@ -313,6 +316,19 @@ function listStr  = recFieldPrint(Structure, indent, depth, printValues, maxArra
         end
         listStr = [listStr; {[strIndent '   |' filler ' ' Field ' :' varStr]}];
     end
+    for iField = 1 : length(functionFields)
+        Field   = cell2mat(functionFields(iField));
+        filler = char(ones(1, maxFieldLength - length(Field) + 2) * 45);
+        if (size(Structure.(Field), 1) > 1) && (size(Structure.(Field), 2) > 1)
+            varStr = createArraySize(['@',func2str(Structure.(Field))], 'char');
+        elseif length(Field) > maxStrLength
+            Val   = func2str(Structure.(Field));
+            varStr = sprintf(' @%s...', Val(1:end));
+        else
+            varStr = sprintf(' @%s', func2str(Structure.(Field)));
+        end
+        listStr = [listStr; {[strIndent '   |' filler ' ' Field ' :' varStr]}];
+    end    
     % Print empty fields
     for iField = 1 : length(emptyFields)
         Field = cell2mat(emptyFields(iField));
