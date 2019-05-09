@@ -319,13 +319,22 @@ function listStr  = recFieldPrint(Structure, indent, depth, printValues, maxArra
     for iField = 1 : length(functionFields)
         Field   = cell2mat(functionFields(iField));
         filler = char(ones(1, maxFieldLength - length(Field) + 2) * 45);
-        if (size(Structure.(Field), 1) > 1) && (size(Structure.(Field), 2) > 1)
-            varStr = createArraySize(['@',func2str(Structure.(Field))], 'char');
-        elseif length(Field) > maxStrLength
-            Val   = func2str(Structure.(Field));
-            varStr = sprintf(' @%s...', Val(1:end));
+        Val    = func2str(Structure.(Field));
+        if Val(1) ~= '@'
+            % Because func2str only shows @ for anonymous functions:
+            %  func2str(@sum) -> 'sum'
+            % but
+            %  func2str(@(x) x+x) -> '@x'
+            % This prefixes all function handle strings with '@' and is
+            % consistent with how MATLAB displays them in structure both
+            % prefixed with @, i.e.,
+            % S = struct('a',@x,'b',@(y) y*y)
+            Val = ['@',Val];
+        end
+        if length(Val) > maxStrLength
+            varStr = sprintf(' %s...', Val(1:maxStrLength));
         else
-            varStr = sprintf(' @%s', func2str(Structure.(Field)));
+            varStr = sprintf(' %s', Val);
         end
         listStr = [listStr; {[strIndent '   |' filler ' ' Field ' :' varStr]}];
     end    
