@@ -308,9 +308,9 @@ function listStr  = recFieldPrint(Structure, indent, depth, printValues, maxArra
         filler = char(ones(1, maxFieldLength - length(Field) + 2) * 45);
         if (size(Structure.(Field), 1) > 1) && (size(Structure.(Field), 2) > 1)
             varStr = createArraySize(Structure.(Field), 'char');
-        elseif length(Field) > maxStrLength
+        elseif length(Structure.(Field)) > maxStrLength
             Val   = Structure.(Field);
-            varStr = sprintf(' ''%s...''', Val(1:end));
+            varStr = sprintf(' ''%s ...''', Val(1:maxStrLength));
         else
             varStr = sprintf(' ''%s''', Structure.(Field));
         end
