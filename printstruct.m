@@ -260,6 +260,9 @@ function listStr  = recFieldPrint(Structure, indent, depth, printValues, maxArra
     % Character or string (array of characters)
     isChar        = structfun(@ischar, Structure);
     charFields    = fields(isChar == 1);
+    % Function
+    isFunction     = structfun(@(x) isa(x,'function_handle'), Structure);
+    functionFields = fields(isFunction == 1);
     % Numeric fields
     isNumeric     = structfun(@isnumeric, Structure);
     % Numeric scalars
@@ -274,7 +277,7 @@ function listStr  = recFieldPrint(Structure, indent, depth, printValues, maxArra
     isLogical     = structfun(@islogical, Structure);
     logicalFields = fields(isLogical == 1);
     % Empty arrays
-    isEmpty       = structfun(@isempty, Structure);
+    isEmpty       = structfun(@isempty, Structure) & ~isChar;
     emptyFields   = fields(isEmpty == 1);
     % Numeric matrix with dimension size 2 or higher
     isMatrix      = structfun(@(x) ndims(x) >= 2, Structure);
@@ -284,7 +287,7 @@ function listStr  = recFieldPrint(Structure, indent, depth, printValues, maxArra
     isCell        = structfun(@iscell, Structure);
     cellFields    = fields(isCell == 1);
     % Datatypes that are not checked for
-    isOther       = not(isChar + isNumeric + isCell + isStruct + isLogical + isEmpty);
+    isOther       = not(isChar + isFunction + isNumeric + isCell + isStruct + isLogical + isEmpty);
     otherFields   = fields(isOther == 1);
     %% Print non-structure fields
     % Print all the selected non structure fields
@@ -305,14 +308,36 @@ function listStr  = recFieldPrint(Structure, indent, depth, printValues, maxArra
         filler = char(ones(1, maxFieldLength - length(Field) + 2) * 45);
         if (size(Structure.(Field), 1) > 1) && (size(Structure.(Field), 2) > 1)
             varStr = createArraySize(Structure.(Field), 'char');
-        elseif length(Field) > maxStrLength
+        elseif length(Structure.(Field)) > maxStrLength
             Val   = Structure.(Field);
-            varStr = sprintf(' ''%s...''', Val(1:end));
+            varStr = sprintf(' ''%s ...''', Val(1:maxStrLength));
         else
             varStr = sprintf(' ''%s''', Structure.(Field));
         end
         listStr = [listStr; {[strIndent '   |' filler ' ' Field ' :' varStr]}];
     end
+    for iField = 1 : length(functionFields)
+        Field   = cell2mat(functionFields(iField));
+        filler = char(ones(1, maxFieldLength - length(Field) + 2) * 45);
+        Val    = func2str(Structure.(Field));
+        if Val(1) ~= '@'
+            % Because func2str only shows @ for anonymous functions:
+            %  func2str(@sum) -> 'sum'
+            % but
+            %  func2str(@(x) x+x) -> '@x'
+            % This prefixes all function handle strings with '@' and is
+            % consistent with how MATLAB displays them in structure both
+            % prefixed with @, i.e.,
+            % S = struct('a',@x,'b',@(y) y*y)
+            Val = ['@',Val];
+        end
+        if length(Val) > maxStrLength
+            varStr = sprintf(' %s...', Val(1:maxStrLength));
+        else
+            varStr = sprintf(' %s', Val);
+        end
+        listStr = [listStr; {[strIndent '   |' filler ' ' Field ' :' varStr]}];
+    end    
     % Print empty fields
     for iField = 1 : length(emptyFields)
         Field = cell2mat(emptyFields(iField));
