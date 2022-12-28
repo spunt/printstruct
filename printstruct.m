@@ -277,7 +277,7 @@ function listStr  = recFieldPrint(Structure, indent, depth, printValues, maxArra
     isLogical     = structfun(@islogical, Structure);
     logicalFields = fields(isLogical == 1);
     % Empty arrays
-    isEmpty       = structfun(@isempty, Structure);
+    isEmpty       = structfun(@isempty, Structure) & ~isChar;
     emptyFields   = fields(isEmpty == 1);
     % Numeric matrix with dimension size 2 or higher
     isMatrix      = structfun(@(x) ndims(x) >= 2, Structure);
