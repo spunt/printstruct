@@ -276,16 +276,16 @@ function listStr  = recFieldPrint(Structure, indent, depth, printValues, maxArra
     % Logical fields
     isLogical     = structfun(@islogical, Structure);
     logicalFields = fields(isLogical == 1);
+    % Cell array
+    isCell        = structfun(@iscell, Structure);
+    cellFields    = fields(isCell == 1);
     % Empty arrays
-    isEmpty       = structfun(@isempty, Structure) & ~isChar;
+    isEmpty       = structfun(@isempty, Structure) & ~isChar & ~isCell;
     emptyFields   = fields(isEmpty == 1);
     % Numeric matrix with dimension size 2 or higher
     isMatrix      = structfun(@(x) ndims(x) >= 2, Structure);
     isMatrix      = isMatrix .* isNumeric .* not(isVector) .* not(isScalar) .* not(isEmpty);
     matrixFields  = fields(isMatrix == 1);
-    % Cell array
-    isCell        = structfun(@iscell, Structure);
-    cellFields    = fields(isCell == 1);
     % Datatypes that are not checked for
     isOther       = not(isChar + isFunction + isNumeric + isCell + isStruct + isLogical + isEmpty);
     otherFields   = fields(isOther == 1);
